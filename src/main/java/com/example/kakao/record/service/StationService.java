@@ -38,6 +38,9 @@ public class StationService {
     // 사용자별 상태를 저장하기 위한 Map
     private final Map<String, String> userBusIdMap = new ConcurrentHashMap<>();
     private final Map<String, String> userStationIdMap = new ConcurrentHashMap<>();
+
+    private final Map<String, String> destinationIdMap = new ConcurrentHashMap<>();
+
     private final Map<String, Integer> userStationMap = new ConcurrentHashMap<>();
     private final Map<String, Boolean> userStopCallingMap = new ConcurrentHashMap<>();
     private final Map<String, AtomicInteger> userCntMap = new ConcurrentHashMap<>();
@@ -45,19 +48,20 @@ public class StationService {
     private static final long RUNNING_DURATION_HOURS = 3; // 3시간
     private final LocalDateTime startTime = LocalDateTime.now();
 
-    private String accountSid="AC6cc78a06e6dfb6b072a64521a7c0729c";
+    private String accountSid=System.getenv("TOKEN");
 
-    private String authToken="bfee18d98e40aa95b7ae5c5da521db07";
+    private String authToken=System.getenv("SID");
 
     // 사용자별 API 호출 상태 설정 메서드
     @Async
-    public void scheduleBusApiCall(String userId, String busId, String stationId, int station) {
+    public void scheduleBusApiCall(String userId, String busId, String stationId, int station, String destination ) {
         userBusIdMap.put(userId, busId);
         userStationIdMap.put(userId, stationId);
         userStationMap.put(userId, station);
         userStopCallingMap.put(userId, false);  // 호출 중단 플래그 초기화
         userSeenBusesMap.put(userId, new HashSet<>());  // 중복 체크 목록 초기화
         userCntMap.put(userId, new AtomicInteger(0));  // 카운터 초기화
+        destinationIdMap.put(userId,destination);
     }
 
     // 5초마다 실행되는 메서드 - 사용자별로 독립적으로 동작
@@ -71,6 +75,7 @@ public class StationService {
 
         userStationIdMap.forEach((userId, stationId) -> {
             String busId = userBusIdMap.get(userId);
+            String destination = destinationIdMap.get(userId);
             Integer station = userStationMap.get(userId);
             Boolean stopCalling = userStopCallingMap.getOrDefault(userId, true);
             AtomicInteger cnt = userCntMap.getOrDefault(userId, new AtomicInteger(0));
@@ -99,7 +104,7 @@ public class StationService {
                                     Optional<Member> byPhone = memberRepository.findByPhone2(userId);
                                     if (byPhone.isPresent()) {
                                         Member member = byPhone.get();
-                                        bus_call(member);
+                                        bus_call(member,busId, station, destination);
                                         // member에 대한 로직 처리
                                     } else {
                                         // 값이 없을 때의 처리 로직
@@ -129,7 +134,7 @@ public class StationService {
         });
     }
 
-    private void bus_call(Member member) {
+    private void bus_call(Member member, String busId, int station, String destination) {
         Twilio.init(accountSid, authToken);
         log.info("버스 콜 실행");
         String phone = member.getPhone();
@@ -139,7 +144,10 @@ public class StationService {
         log.info(to);
 
         // 사용자에게 전달할 음성 메시지 작성
-        Say say = new Say.Builder("안녕하세요, 이것은 당신을 위한 음성 메시지입니다.")
+        String message = String.format("어르신, %s로 향하는 %s번 버스가 %d정류장 남았습니다. 챙겨서 출발해주세요. 감사합니다.",
+                destination, busId, station);
+
+        Say say = new Say.Builder(message)
                 .language(Say.Language.KO_KR)
                 .voice(Say.Voice.ALICE)
                 .build();

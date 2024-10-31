@@ -101,7 +101,8 @@ public class NoteService {
                             note.getMember().getMemberId(),
                             note.getNotionId(),
                             note.getStationId(),
-                            note.getStation()
+                            note.getStation(),
+                            note.getDestination()
                     );
                 }
 

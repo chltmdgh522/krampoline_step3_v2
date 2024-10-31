@@ -58,7 +58,7 @@ public class NoteController {
         int station = req.station();
         String busId =req.notionId();
         // 5초마다 API 호출 시작
-        stationService.scheduleBusApiCall(userId,busId, stationId,station);
+        stationService.scheduleBusApiCall(userId,busId, stationId,station, note.getData().getDestination());
 
         // Note 객체를 NoteSaveResponse로 변환
         NoteSaveResponse response = NoteSaveResponse.of(note.getData());
