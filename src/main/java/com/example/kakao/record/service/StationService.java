@@ -47,7 +47,7 @@ public class StationService {
 
     private String accountSid=System.getenv("TOKEN");
 
-
+    private String authToken=System.getenv("SID");
 
     // 사용자별 API 호출 상태 설정 메서드
     @Async
@@ -80,8 +80,7 @@ public class StationService {
                 String url = "https://bus.jeju.go.kr/api/searchArrivalInfoList.do?station_id=" + stationId;
                 ResponseEntity<BusInfo[]> response = restTemplate.getForEntity(url, BusInfo[].class);
                 BusInfo[] buses = response.getBody();
-                log.info("Twilio Account SID: {}", accountSid);
-                log.info("Twilio Auth Token: {}", authToken);
+        
 
                 if (buses != null) {
                     log.info("API 응답 데이터: {}", Arrays.toString(buses));
