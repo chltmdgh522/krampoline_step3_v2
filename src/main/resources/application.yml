@@ -5,3 +5,13 @@ spring:
 jwt:
   secret: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+[]{}|;:,.<>?
   expiration: 36000000
+management:
+  endpoints:
+    health:
+      probes:
+        enabled: true
+  health:
+    readinessState:
+      enabled: true
+    livenessState:
+      enabled: true
