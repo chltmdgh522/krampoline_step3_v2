@@ -20,12 +20,12 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtInterceptor).addPathPatterns("/api/bus/**");
     }
 
-//    @Override
-//    public void addCorsMappings(CorsRegistry registry) {
-//        registry.addMapping("/api/test")
-//                .allowedOrigins("http://localhost:8080")
-//                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-//                .allowedHeaders("*")
-//                .allowCredentials(true);
-//    }
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**") // 모든 경로에 대해 적용
+                .allowedOrigins("https://k983be54c0935a.user-app.krampoline.com") // 허용할 도메인 설정
+                .allowedMethods("GET", "POST", "PUT", "DELETE") // 허용할 HTTP 메서드
+                .allowCredentials(true);
+    }
+
 }
