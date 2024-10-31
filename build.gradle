@@ -1,13 +1,13 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '2.7.6'
+	id 'org.springframework.boot' version '3.2.4'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	id "org.asciidoctor.jvm.convert" version "3.3.2"
 }
 
 group = 'com.example'
 version = '1.0'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 repositories {
 	mavenCentral()
@@ -18,6 +18,27 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	//스웨커
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+	//ai 문자 때문에 추가
+	implementation 'org.json:json:20211205'
+// open ai
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+
+
+	implementation 'com.stripe:stripe-java:23.2.0'
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+	implementation 'sh.platform:config:2.2.2'
+
+	implementation 'commons-io:commons-io:2.11.0' // 파일 입출력
+	implementation 'com.twilio.sdk:twilio:8.0.0'
+	
+	// JWT
+	annotationProcessor 'org.projectlombok:lombok'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 	runtimeOnly 'com.h2database:h2'
 	compileOnly 'org.projectlombok:lombok'

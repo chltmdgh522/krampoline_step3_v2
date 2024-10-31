@@ -2,3 +2,6 @@ spring:
   profiles:
     active:
       - local
+jwt:
+  secret: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+[]{}|;:,.<>?
+  expiration: 36000000
