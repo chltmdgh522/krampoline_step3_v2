@@ -1,5 +1,6 @@
 package com.example.kakao.record.controller;
 
+
 import com.example.kakao.global.dto.response.SuccessResponse;
 import com.example.kakao.global.dto.response.result.ListResult;
 import com.example.kakao.global.dto.response.result.SingleResult;

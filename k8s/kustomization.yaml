@@ -1,0 +1,8 @@
+# resources:
+#   - deployment.yaml
+#   - service.yaml
+#   - secret-access-role.yaml          # 추가
+#   - secret-access-rolebinding.yaml   # 추가
+
+# generatorOptions:
+#   disableNameSuffixHash: true
