@@ -45,9 +45,9 @@ public class StationService {
     private static final long RUNNING_DURATION_HOURS = 3; // 3시간
     private final LocalDateTime startTime = LocalDateTime.now();
 
-    private String accountSid="AC6cc78a06e6dfb6b072a64521a7c0729c";
+    private String accountSid=System.getenv("TOKEN");
 
-    private String authToken="bfee18d98e40aa95b7ae5c5da521db07";
+
 
     // 사용자별 API 호출 상태 설정 메서드
     @Async
