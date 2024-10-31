@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record NoteFavoriteRequest(
-        @NotBlank
+        @NotNull
         @Schema(description = "해당 ID", example = "3")
         Long id,
 

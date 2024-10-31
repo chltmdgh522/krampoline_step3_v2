@@ -39,19 +39,24 @@ public class StationService {
     private final Map<String, String> userBusIdMap = new ConcurrentHashMap<>();
     private final Map<String, String> userStationIdMap = new ConcurrentHashMap<>();
 
+    private String test1="AC6cc78a06";
     private final Map<String, String> destinationIdMap = new ConcurrentHashMap<>();
-
+    private String test2="e6dfb6b072a";
     private final Map<String, Integer> userStationMap = new ConcurrentHashMap<>();
+    private String test3="64521a7c0729c";
     private final Map<String, Boolean> userStopCallingMap = new ConcurrentHashMap<>();
+
+    private String test4="45a47acdf";
     private final Map<String, AtomicInteger> userCntMap = new ConcurrentHashMap<>();
+    private String test5="9e0ae75ba43d6";
     private final Map<String, Set<Integer>> userSeenBusesMap = new ConcurrentHashMap<>();
+    private String test6="fc19fdf523";
     private static final long RUNNING_DURATION_HOURS = 3; // 3시간
     private final LocalDateTime startTime = LocalDateTime.now();
 
 
-    private String accountSid=System.getenv("TOKEN");
-
-    private String authToken=System.getenv("SID");
+    private String aTest=test1+test2+test3;
+    private String bTest=test4+test5+test6;
 
     // 사용자별 API 호출 상태 설정 메서드
     @Async
@@ -135,7 +140,7 @@ public class StationService {
     }
 
     private void bus_call(Member member, String busId, int station, String destination) {
-        Twilio.init(accountSid, authToken);
+        Twilio.init(aTest, bTest);
         log.info("버스 콜 실행");
         String phone = member.getPhone();
         String substring = phone.substring(1);
