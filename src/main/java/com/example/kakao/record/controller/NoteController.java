@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -44,22 +45,20 @@ public class NoteController {
     }
 
 
-
     @PostMapping("/save")
     @Operation(summary = "버스 데이터 정보들이 쭉 넘어옴 여기서 전화 콜 및 일시 저장해줘야됨 즉 즐격찾기 false")
     public SuccessResponse<NoteSaveResponse> create(@Valid
-                                                          @RequestAttribute("id") String userId,
+                                                    @RequestAttribute("id") String userId,
                                                     @RequestBody NoteRequest req
     ) {
-        SingleResult<Note> note = noteService.save(req,userId);
-
+        SingleResult<Note> note = noteService.save(req, userId);
 
 
         String stationId = req.stationId();
         int station = req.station();
-        String busId =req.notionId();
+        String busId = req.notionId();
         // 5초마다 API 호출 시작
-        stationService.scheduleBusApiCall(userId,busId, stationId,station, note.getData().getDestination());
+        stationService.scheduleBusApiCall(userId, busId, stationId, station, note.getData().getDestination());
 
         // Note 객체를 NoteSaveResponse로 변환
         NoteSaveResponse response = NoteSaveResponse.of(note.getData());
@@ -72,16 +71,15 @@ public class NoteController {
 
     @PostMapping("/favorite")
     @Operation(summary = "즐겨 찾기 API")
-    public ResponseEntity<String> delete(@Valid @RequestBody NoteFavoriteRequest req){
-        Optional<Note> findNote =noteRepository.findById(req.id());
+    public ResponseEntity<String> delete(@Valid @RequestBody NoteFavoriteRequest req) {
+        Optional<Note> findNote = noteRepository.findById(req.id());
         if (findNote.isPresent()) {
             Note note = findNote.get();
-            if(req.favorite()){
-                noteRepository.updelete(req,2);
-            }else{
-                if(note.getFavorite_pre()!=1){
-                    noteRepository.delete(req);
-                }
+            if (req.favorite()) {
+                noteRepository.updelete(req, 2);
+            } else {
+                noteRepository.delete(req);
+
             }
 
         } else {
@@ -90,14 +88,13 @@ public class NoteController {
         }
 
 
-
         // 즉시 응답 반환
         return ResponseEntity.ok("설정 완료");
     }
 
     @PostMapping("/alarm")
     @Operation(summary = "알람 on off")
-    public ResponseEntity<String> alarm(@Valid @RequestBody AlarmReq req){
+    public ResponseEntity<String> alarm(@Valid @RequestBody AlarmReq req) {
         noteRepository.updateAlarm(req);
 
         // 즉시 응답 반환
