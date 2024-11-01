@@ -85,10 +85,6 @@ public class StationService {
     @Scheduled(fixedRate = 5000)
     public void callBusApi() {
         // 현재 시간이 시작 시간으로부터 3시간 경과했는지 확인
-        if (ChronoUnit.HOURS.between(startTime, LocalDateTime.now()) >= RUNNING_DURATION_HOURS) {
-            log.info("3시간이 경과하여 스케줄링을 중단합니다.");
-            return;  // 스케줄링 중단
-        }
 
         userStationIdMap.forEach((userId, stationId) -> {
             String busId = userBusIdMap.get(userId);
