@@ -82,11 +82,9 @@ public class StationService {
     }
 
     // 5초마다 실행되는 메서드 - 사용자별로 독립적으로 동작
-    @Scheduled(fixedRate = 20000)
+    @Scheduled(fixedRate = 5000)
     public void callBusApi() {
         // 현재 시간이 시작 시간으로부터 3시간 경과했는지 확인
-
-
         userStationIdMap.forEach((userId, stationId) -> {
             String busId = userBusIdMap.get(userId);
             String destination = destinationIdMap.get(userId);
@@ -98,52 +96,15 @@ public class StationService {
             if (byPhone.isPresent()) {
                 Member member = byPhone.get();
                 bus_call(member, busId, station, destination);
-                // member에 대한 로직 처리
+
+                try {
+                    Thread.sleep(30000); // 30000 milliseconds = 30 seconds
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
                 // 값이 없을 때의 처리 로직
                 throw new NoSuchElementException("해당하는 사용자가 없습니다.");
-            }
-            if (stationId != null && !stopCalling) {
-                String url = "https://bus.jeju.go.kr/api/searchArrivalInfoList.do?station_id=" + stationId;
-                ResponseEntity<BusInfo[]> response = restTemplate.getForEntity(url, BusInfo[].class);
-                BusInfo[] buses = response.getBody();
-
-
-                if (buses != null) {
-                    log.info("API 응답 데이터: {}", Arrays.toString(buses));
-                    log.info("현재 {} 사용자의 cnt 값: {}", userId, cnt);
-
-                    Arrays.stream(buses)
-                            .filter(bus -> busId.equals(bus.getRouteNum()) && bus.getRemainStation() == station)
-                            .forEach(bus -> {
-                                if (!seenBuses.contains(bus.getVhId())) {
-                                    log.info("{} 사용자에게 조건을 만족하는 새로운 버스를 찾았습니다: {}", userId, bus);
-                                    seenBuses.add(bus.getVhId());
-                                    cnt.incrementAndGet();  // 새로운 버스일 경우 카운터 증가
-                                    userCntMap.put(userId, cnt);
-                                    log.info("현재 {} 사용자의 cnt 값: {}", userId, cnt);
-
-
-                                    if (cnt.get() >= 2) {
-                                        log.info("{} 사용자의 cnt가 2에 도달하여 호출을 중단합니다.", userId);
-                                        userStopCallingMap.put(userId, true);
-                                    }
-                                } else {
-                                    log.info("{} 사용자는 이미 확인된 버스입니다: {}", userId, bus.getVhId());
-                                }
-                            });
-
-                    if (cnt.get() < 2) {
-                        log.info("{} 사용자에게 조건을 만족하는 새로운 버스를 찾지 못했습니다.", userId);
-                    }
-                } else {
-                    log.warn("API 응답에서 버스 데이터가 비어 있습니다.");
-                }
-
-                // 상태 업데이트
-                userSeenBusesMap.put(userId, seenBuses);
-                userCntMap.put(userId, cnt);
-
             }
 
         });
