@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -29,11 +30,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 @EnableScheduling
 @Slf4j
-@RequiredArgsConstructor
-public class StationService {
-    private final MemberRepository memberRepository;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+public class StationService {
+    private final RestTemplate restTemplate;
+private final MemberRepository memberRepository;
+    public StationService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(15000); // 연결 타임아웃 5초
+        factory.setReadTimeout(10000);   // 읽기 타임아웃 10초
+
+        this.restTemplate = new RestTemplate(factory);
+    }
+
 
     // 사용자별 상태를 저장하기 위한 Map
     private final Map<String, String> userBusIdMap = new ConcurrentHashMap<>();
