@@ -97,27 +97,27 @@ public class StationService {
             Boolean stopCalling = userStopCallingMap.getOrDefault(userId, true);
             AtomicInteger cnt = userCntMap.getOrDefault(userId, new AtomicInteger(0));
             Set<Integer> seenBuses = userSeenBusesMap.getOrDefault(userId, new HashSet<>());
-
+            try {
+                Thread.sleep(20000); // 10초 대기
+                Optional<Member> byPhone = memberRepository.findByPhone2(userId);
+                if (byPhone.isPresent()) {
+                    Member member = byPhone.get();
+                    bus_call(member, busId, station, destination);
+                    // member에 대한 로직 처리
+                } else {
+                    // 값이 없을 때의 처리 로직
+                    throw new NoSuchElementException("해당하는 사용자가 없습니다.");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
             if (stationId != null && !stopCalling) {
                 String url = "https://bus.jeju.go.kr/api/searchArrivalInfoList.do?station_id=" + stationId;
                 ResponseEntity<BusInfo[]> response = restTemplate.getForEntity(url, BusInfo[].class);
                 BusInfo[] buses = response.getBody();
 
 
-                try {
-                    Thread.sleep(20000); // 20초 대기
-                    Optional<Member> byPhone = memberRepository.findByPhone2(userId);
-                    if (byPhone.isPresent()) {
-                        Member member = byPhone.get();
-                        bus_call(member, busId, station, destination);
-                        // member에 대한 로직 처리
-                    } else {
-                        // 값이 없을 때의 처리 로직
-                        throw new NoSuchElementException("해당하는 사용자가 없습니다.");
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+
 
 
                 if (buses != null) {
