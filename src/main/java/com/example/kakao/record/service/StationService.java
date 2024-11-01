@@ -82,13 +82,10 @@ public class StationService {
     }
 
     // 5초마다 실행되는 메서드 - 사용자별로 독립적으로 동작
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 20000)
     public void callBusApi() {
         // 현재 시간이 시작 시간으로부터 3시간 경과했는지 확인
-<<<<<<< HEAD
-     
-=======
->>>>>>> 3cad99c09fe098b4b578b828b994d1037998b384
+
 
         userStationIdMap.forEach((userId, stationId) -> {
             String busId = userBusIdMap.get(userId);
@@ -97,27 +94,19 @@ public class StationService {
             Boolean stopCalling = userStopCallingMap.getOrDefault(userId, true);
             AtomicInteger cnt = userCntMap.getOrDefault(userId, new AtomicInteger(0));
             Set<Integer> seenBuses = userSeenBusesMap.getOrDefault(userId, new HashSet<>());
-            try {
-                Thread.sleep(20000); // 10초 대기
-                Optional<Member> byPhone = memberRepository.findByPhone2(userId);
-                if (byPhone.isPresent()) {
-                    Member member = byPhone.get();
-                    bus_call(member, busId, station, destination);
-                    // member에 대한 로직 처리
-                } else {
-                    // 값이 없을 때의 처리 로직
-                    throw new NoSuchElementException("해당하는 사용자가 없습니다.");
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+            Optional<Member> byPhone = memberRepository.findByPhone2(userId);
+            if (byPhone.isPresent()) {
+                Member member = byPhone.get();
+                bus_call(member, busId, station, destination);
+                // member에 대한 로직 처리
+            } else {
+                // 값이 없을 때의 처리 로직
+                throw new NoSuchElementException("해당하는 사용자가 없습니다.");
             }
             if (stationId != null && !stopCalling) {
                 String url = "https://bus.jeju.go.kr/api/searchArrivalInfoList.do?station_id=" + stationId;
                 ResponseEntity<BusInfo[]> response = restTemplate.getForEntity(url, BusInfo[].class);
                 BusInfo[] buses = response.getBody();
-
-
-
 
 
                 if (buses != null) {
@@ -154,17 +143,11 @@ public class StationService {
                 // 상태 업데이트
                 userSeenBusesMap.put(userId, seenBuses);
                 userCntMap.put(userId, cnt);
-<<<<<<< HEAD
-                   try {
-=======
-                try {
->>>>>>> 3cad99c09fe098b4b578b828b994d1037998b384
-                    Thread.sleep(2000000); // 10초 대기
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+
             }
+
         });
+
     }
 
     private void bus_call(Member member, String busId, int station, String destination) {
