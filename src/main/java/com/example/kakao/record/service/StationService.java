@@ -38,8 +38,8 @@ private final MemberRepository memberRepository;
         this.memberRepository = memberRepository;
 
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(15000); // 연결 타임아웃 5초
-        factory.setReadTimeout(10000);   // 읽기 타임아웃 10초
+        factory.setConnectTimeout(20000); // 연결 타임아웃 5초
+        factory.setReadTimeout(20000);   // 읽기 타임아웃 10초
 
         this.restTemplate = new RestTemplate(factory);
     }
@@ -81,7 +81,7 @@ private final MemberRepository memberRepository;
     }
 
     // 5초마다 실행되는 메서드 - 사용자별로 독립적으로 동작
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 30000)
     public void callBusApi() {
         // 현재 시간이 시작 시간으로부터 3시간 경과했는지 확인
         if (ChronoUnit.HOURS.between(startTime, LocalDateTime.now()) >= RUNNING_DURATION_HOURS) {
