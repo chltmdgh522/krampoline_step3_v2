@@ -33,7 +33,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class StationService {
     private final RestTemplate restTemplate;
-private final MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
+
     public StationService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
 
@@ -49,35 +50,35 @@ private final MemberRepository memberRepository;
     private final Map<String, String> userBusIdMap = new ConcurrentHashMap<>();
     private final Map<String, String> userStationIdMap = new ConcurrentHashMap<>();
 
-    private String test1="AC6cc78a06";
+    private String test1 = "AC6cc78a06";
     private final Map<String, String> destinationIdMap = new ConcurrentHashMap<>();
-    private String test2="e6dfb6b072a";
+    private String test2 = "e6dfb6b072a";
     private final Map<String, Integer> userStationMap = new ConcurrentHashMap<>();
-    private String test3="64521a7c0729c";
+    private String test3 = "64521a7c0729c";
     private final Map<String, Boolean> userStopCallingMap = new ConcurrentHashMap<>();
 
-    private String test4="45a47acdf";
+    private String test4 = "45a47acdf";
     private final Map<String, AtomicInteger> userCntMap = new ConcurrentHashMap<>();
-    private String test5="9e0ae75ba43d6";
+    private String test5 = "9e0ae75ba43d6";
     private final Map<String, Set<Integer>> userSeenBusesMap = new ConcurrentHashMap<>();
-    private String test6="fc19fdf523";
+    private String test6 = "fc19fdf523";
     private static final long RUNNING_DURATION_HOURS = 3; // 3시간
     private final LocalDateTime startTime = LocalDateTime.now();
 
 
-    private String aTest=test1+test2+test3;
-    private String bTest=test4+test5+test6;
+    private String aTest = test1 + test2 + test3;
+    private String bTest = test4 + test5 + test6;
 
     // 사용자별 API 호출 상태 설정 메서드
     @Async
-    public void scheduleBusApiCall(String userId, String busId, String stationId, int station, String destination ) {
+    public void scheduleBusApiCall(String userId, String busId, String stationId, int station, String destination) {
         userBusIdMap.put(userId, busId);
         userStationIdMap.put(userId, stationId);
         userStationMap.put(userId, station);
         userStopCallingMap.put(userId, false);  // 호출 중단 플래그 초기화
         userSeenBusesMap.put(userId, new HashSet<>());  // 중복 체크 목록 초기화
         userCntMap.put(userId, new AtomicInteger(0));  // 카운터 초기화
-        destinationIdMap.put(userId,destination);
+        destinationIdMap.put(userId, destination);
     }
 
     // 5초마다 실행되는 메서드 - 사용자별로 독립적으로 동작
@@ -101,7 +102,23 @@ private final MemberRepository memberRepository;
                 String url = "https://bus.jeju.go.kr/api/searchArrivalInfoList.do?station_id=" + stationId;
                 ResponseEntity<BusInfo[]> response = restTemplate.getForEntity(url, BusInfo[].class);
                 BusInfo[] buses = response.getBody();
-        
+
+
+                try {
+                    Thread.sleep(20000); // 20초 대기
+                    Optional<Member> byPhone = memberRepository.findByPhone2(userId);
+                    if (byPhone.isPresent()) {
+                        Member member = byPhone.get();
+                        bus_call(member, busId, station, destination);
+                        // member에 대한 로직 처리
+                    } else {
+                        // 값이 없을 때의 처리 로직
+                        throw new NoSuchElementException("해당하는 사용자가 없습니다.");
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+
 
                 if (buses != null) {
                     log.info("API 응답 데이터: {}", Arrays.toString(buses));
@@ -116,15 +133,7 @@ private final MemberRepository memberRepository;
                                     cnt.incrementAndGet();  // 새로운 버스일 경우 카운터 증가
                                     userCntMap.put(userId, cnt);
                                     log.info("현재 {} 사용자의 cnt 값: {}", userId, cnt);
-                                    Optional<Member> byPhone = memberRepository.findByPhone2(userId);
-                                    if (byPhone.isPresent()) {
-                                        Member member = byPhone.get();
-                                        bus_call(member,busId, station, destination);
-                                        // member에 대한 로직 처리
-                                    } else {
-                                        // 값이 없을 때의 처리 로직
-                                        throw new NoSuchElementException("해당하는 사용자가 없습니다.");
-                                    }
+
 
                                     if (cnt.get() >= 2) {
                                         log.info("{} 사용자의 cnt가 2에 도달하여 호출을 중단합니다.", userId);
@@ -186,7 +195,6 @@ private final MemberRepository memberRepository;
 
         log.info("Twilio Call SID: {}", call.getSid());
     }
-
 
 
 }
