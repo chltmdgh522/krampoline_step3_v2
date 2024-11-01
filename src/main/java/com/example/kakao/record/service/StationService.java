@@ -85,7 +85,10 @@ public class StationService {
     @Scheduled(fixedRate = 5000)
     public void callBusApi() {
         // 현재 시간이 시작 시간으로부터 3시간 경과했는지 확인
+<<<<<<< HEAD
      
+=======
+>>>>>>> 3cad99c09fe098b4b578b828b994d1037998b384
 
         userStationIdMap.forEach((userId, stationId) -> {
             String busId = userBusIdMap.get(userId);
@@ -151,7 +154,11 @@ public class StationService {
                 // 상태 업데이트
                 userSeenBusesMap.put(userId, seenBuses);
                 userCntMap.put(userId, cnt);
+<<<<<<< HEAD
                    try {
+=======
+                try {
+>>>>>>> 3cad99c09fe098b4b578b828b994d1037998b384
                     Thread.sleep(2000000); // 10초 대기
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
