@@ -82,7 +82,7 @@ public class StationService {
     }
 
     // 5초마다 실행되는 메서드 - 사용자별로 독립적으로 동작
-    @Scheduled(fixedRate = 10000000)
+    @Scheduled(fixedRate = 5000)
     public void callBusApi() {
         // 현재 시간이 시작 시간으로부터 3시간 경과했는지 확인
         if (ChronoUnit.HOURS.between(startTime, LocalDateTime.now()) >= RUNNING_DURATION_HOURS) {
@@ -154,6 +154,11 @@ public class StationService {
                 // 상태 업데이트
                 userSeenBusesMap.put(userId, seenBuses);
                 userCntMap.put(userId, cnt);
+                try {
+                    Thread.sleep(1000000); // 10초 대기
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
