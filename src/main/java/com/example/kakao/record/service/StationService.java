@@ -155,7 +155,7 @@ public class StationService {
                 userSeenBusesMap.put(userId, seenBuses);
                 userCntMap.put(userId, cnt);
                 try {
-                    Thread.sleep(1000000); // 10초 대기
+                    Thread.sleep(2000000); // 10초 대기
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
